@@ -1,0 +1,8 @@
+// tsconfig.jest.json
+{
+    "extends": "./tsconfig",
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+    },
+}

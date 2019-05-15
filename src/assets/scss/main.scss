@@ -1,0 +1,20 @@
+
+/* Load dependency components */
+
+// @import 'components/c-explore';
+
+/* Load third-party dependencies */
+
+// @import '~@hig/styles/mixins/colors.scss';
+
+body,
+html,
+#root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+}

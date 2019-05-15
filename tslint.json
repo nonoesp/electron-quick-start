@@ -1,0 +1,15 @@
+{
+    "extends": [
+      "tslint:recommended",
+      "tslint-react"
+    ],
+    "linterOptions": {
+      "ignoreDefinitionFiles": false,
+      "exclude": [
+        "node_modules/**/*.ts",
+      ]
+    },
+    "rules": {
+      "max-classes-per-file": [false, 1]
+    }
+  }
