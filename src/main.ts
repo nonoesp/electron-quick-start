@@ -8,28 +8,27 @@ import { client } from 'electron-connect';
 
 declare var __dirname: string;
 
-const WEB_SERVER_PORT = 3001;
-
-// AGD-830: Use express web server in static mode to serve HTML and JS resources
-const expressServer = express();
-let activeWebServer: http.Server;
-expressServer.set("port", WEB_SERVER_PORT);
-expressServer.use(express.static(path.join(__dirname, "./" )));
-
-// Save a reference to the window object, so that its not garbage collected
+// Save a reference to the window object, so that it's not garbage collected
 let mainWindow: Electron.BrowserWindow;
 
-function openWindow(uri: string) {
+function createWindow() {
     mainWindow = new BrowserWindow({
-        height: 800,
-        icon: path.join(__dirname, "src/assets/icons/png/64x64.png"),
-        minHeight: 600,
+        height: 500,
+        icon: path.join(__dirname, "src/assets/icon.icns"),
+        minHeight: 400,
         minWidth: 410,
-        width: 1380,
+        width: 700,
+        webPreferences: {
+            nodeIntegration: true,
+        }
     });
 
-    mainWindow.loadURL(uri);
-
+    if (process.env.NODE_ENV === Environments.Development) {
+        mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+    } else {
+        mainWindow.loadFile(path.join(__dirname, "../app/index.html"));
+    }
+    
     mainWindow.on("close", () => app.quit());
     if (process.env.NODE_ENV === Environments.Development) {
         mainWindow.webContents.openDevTools({ mode: "undocked" });
@@ -47,12 +46,16 @@ function openWindow(uri: string) {
 }
 
 app.on("ready", () => {
-    activeWebServer = expressServer.listen(WEB_SERVER_PORT);
-    openWindow(`http://localhost:${WEB_SERVER_PORT}/index.html`);
-    client.create(mainWindow);
+    createWindow();
+    if (process.env.WATCH) {
+        client.create(mainWindow);
+    }
 });
 
 app.on("window-all-closed", () => {
-    activeWebServer.close();
-    app.quit();
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== "darwin") {
+        app.quit();
+    }
 });

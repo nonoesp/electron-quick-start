@@ -65,6 +65,7 @@ const commonConfig = {
 };
 
 module.exports = function(env, argv) {
+    const watch = /--watch/.test(JSON.stringify(process.argv));
     return [Object.assign(
         {
             target: 'electron-main',
@@ -77,7 +78,16 @@ module.exports = function(env, argv) {
                 new Dotenv(),
                 new webpack.ProvidePlugin({
                     THREE: 'three',
-                })
+                }),
+                new webpack.DefinePlugin({
+                    "process.env.WATCH": watch
+                }),
+                new webpack.DefinePlugin({
+                    "process.env.WEB": false
+                }),
+                new webpack.DefinePlugin({
+                    "process.env.TEST": env && env.TEST ? JSON.stringify(env.TEST) : "false"
+                }),
             ],
             devtool: argv['mode'] === "production" ? "none" : "inline-source-map",
         },
@@ -98,13 +108,19 @@ module.exports = function(env, argv) {
                 new CleanWebpackPlugin(['dist'], {
                     exclude: ['main.js']
                 }),
+                new webpack.DefinePlugin({
+                    "process.env.WEB": false
+                }),
+                new webpack.DefinePlugin({
+                    "process.env.TEST": env && env.TEST ? JSON.stringify(env.TEST) : "false"
+                }),                
                 ...Object.keys(guiEntries).map(k => new HtmlWebpackPlugin({
                     filename: `${k}.html`,
                     chunks: [k],
                     template: fs.existsSync(`src/${k}.ejs`) ? `src/${k}.ejs` : 'src/default.ejs'
                 })),
-                ElectronReloadWebpackPlugin(),
-            ],
+                (argv['watch'] === true && ElectronReloadWebpackPlugin()),
+            ].filter(function(plugin) {return plugin !== false}),
             devtool: argv['mode'] === "production" ? "none" : "inline-source-map"
         },
         commonConfig)]
