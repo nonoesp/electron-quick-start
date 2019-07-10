@@ -2,6 +2,19 @@
 
 Electron with Webpack, TypeScript, React, Redux, Jest, auto-reload, and more.
 
+## Usage
+
+```bash
+# Clone this repository
+git clone https://github.com/nonoesp/electron-quick-start
+# Go into the repository
+cd electron-quick-start
+# Install dependencies
+npm install
+# Run the app
+npm start
+```
+
 ## Commands
 
 - `npm start` run the Electron app
